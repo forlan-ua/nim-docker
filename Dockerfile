@@ -1,4 +1,7 @@
 FROM debian:stretch
+    
+ARG VERSION=devel
+ENV PATH="${PATH}:/Nim/bin:/root/.nimble/bin"
 
 RUN apt-get update && apt-get install -y \
     gcc \
@@ -9,12 +12,11 @@ RUN apt-get update && apt-get install -y \
     \
     && git clone https://github.com/nim-lang/Nim.git \
     && cd Nim \
+    && git checkout $VERSION \
     && git clone --depth 1 https://github.com/nim-lang/csources.git \
     && cd csources \
     && sh build.sh \
     && cd .. \
     && bin/nim c koch \
     && ./koch boot -d:release \
-    && ln -s /Nim/bin/nim /usr/local/bin/nim \
-    && ./koch nimble -d:release \
-    && ln -s /Nim/bin/nimble /usr/local/bin/nimble
+    && ./koch nimble -d:release
